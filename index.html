@@ -13,7 +13,7 @@
 
     body {
       height: 100vh;
-      background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+      background: linear-gradient(135deg, #b993d6 0%, #8ca6db 100%);
       overflow: hidden;
       font-family: 'Open Sans', sans-serif;
     }
@@ -37,57 +37,89 @@
     }
 
     @keyframes fall {
-      0% {
-        transform: translateY(-10px);
-        opacity: 0.8;
-      }
-      100% {
-        transform: translateY(110vh);
-        opacity: 0;
-      }
+      0% { transform: translateY(-10px); opacity: 0.8; }
+      100% { transform: translateY(110vh); opacity: 0; }
     }
 
     .card {
       position: relative;
       z-index: 1;
-      background: white;
+      background: #fff8fc;
       padding: 40px 60px;
       border-radius: 30px;
-      box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+      box-shadow: 0 20px 40px rgba(0,0,0,0.15);
       text-align: center;
       animation: float 3s ease-in-out infinite;
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
       max-width: 80%;
+      display: none;
+      opacity: 0;
+      transition: opacity 1s ease;
     }
 
     .card h1 {
       font-family: 'Pacifico', cursive;
-      font-size: 3rem;
-      color: #ff6f61;
+      font-size: 2.5rem;
+      color: #d16ba5;
       margin-bottom: 10px;
     }
 
     .card p {
       font-size: 1.2rem;
-      color: #555;
+      color: #6b6b6b;
+    }
+
+    .name {
+      font-size: 2rem;
+      color: #b03e94;
+      margin-top: 20px;
+      display: none;
+      opacity: 0;
+      transition: opacity 1s ease;
+    }
+
+    .gift {
+      position: absolute;
+      top: 75%;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 2;
+      cursor: pointer;
+      transition: transform 0.3s ease;
+      width: 80px;
+      height: 80px;
+    }
+
+    .gift:hover {
+      transform: translateX(-50%) scale(1.1);
+    }
+
+    .confetti {
+      position: absolute;
+      width: 8px;
+      height: 8px;
+      background: red;
+      animation: confettiFall 2s linear forwards;
+      opacity: 0.8;
+      border-radius: 2px;
     }
 
     @keyframes float {
-      0%, 100% {
-        transform: translate(-50%, -48%);
-      }
-      50% {
-        transform: translate(-50%, -52%);
-      }
+      0%, 100% { transform: translate(-50%, -48%); }
+      50% { transform: translate(-50%, -52%); }
+    }
+
+    @keyframes confettiFall {
+      0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+      100% { transform: translateY(100vh) rotate(360deg); opacity: 0; }
     }
   </style>
 </head>
-<body>
+<body onclick="showCard()">
   <!-- Bintang-bintang -->
   <div class="stars">
-    <!-- Generate 50 bintang -->
     <script>
       for (let i = 0; i < 50; i++) {
         const star = document.createElement('div');
@@ -102,9 +134,70 @@
   </div>
 
   <!-- Kartu Ucapan -->
-  <div class="card">
-    <h1>Happy Nice Day</h1>
+  <div class="card" id="card">
+    <h1>Don't forget to always pray and be patient</h1>
     <p>for Dea ✨</p>
+    <div class="name" id="name"></div>
   </div>
+
+  <!-- Kado SVG -->
+  <div class="gift" onclick="revealName(event)">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+      <g fill="none" stroke="#ff69b4" stroke-width="2">
+        <rect x="8" y="22" width="48" height="34" fill="#ffe4f2"/>
+        <path d="M32 2 C28 6, 28 14, 32 18 C36 14, 36 6, 32 2 Z" fill="#ffb6c1"/>
+        <path d="M20 2 C16 6, 16 14, 20 18 C24 14, 24 6, 20 2 Z" fill="#ffb6c1"/>
+        <path d="M44 2 C40 6, 40 14, 44 18 C48 14, 48 6, 44 2 Z" fill="#ffb6c1"/>
+        <line x1="32" y1="18" x2="32" y2="56" stroke="#ff69b4" stroke-width="4"/>
+      </g>
+    </svg>
+  </div>
+
+  <script>
+    let cardShown = false;
+    function showCard() {
+      if (!cardShown) {
+        const card = document.getElementById('card');
+        card.style.display = 'block';
+        setTimeout(() => {
+          card.style.opacity = 1;
+        }, 100);
+        cardShown = true;
+      }
+    }
+
+    function revealName(event) {
+      event.stopPropagation(); // tetap cegah bubbling
+      showCard(); // tampilkan kartu
+
+      // Munculkan nama
+      const name = document.getElementById('name');
+      name.style.display = 'block';
+      setTimeout(() => {
+        name.style.opacity = 1;
+      }, 100);
+
+      // Confetti
+      for (let i = 0; i < 50; i++) {
+        const confetti = document.createElement('div');
+        confetti.classList.add('confetti');
+        confetti.style.left = `${Math.random() * 100}vw`;
+        confetti.style.backgroundColor = `hsl(${Math.random() * 360}, 100%, 70%)`;
+        confetti.style.animationDuration = `${1 + Math.random() * 2}s`;
+        document.body.appendChild(confetti);
+        setTimeout(() => confetti.remove(), 3000);
+      }
+
+      // Kado goyang
+      const gift = document.querySelector('.gift');
+      gift.style.transform = "translateX(-50%) rotate(15deg)";
+      setTimeout(() => {
+        gift.style.transform = "translateX(-50%) rotate(-15deg)";
+        setTimeout(() => {
+          gift.style.transform = "translateX(-50%) rotate(0deg)";
+        }, 200);
+      }, 200);
+    }
+  </script>
 </body>
 </html>
